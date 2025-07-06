@@ -103,9 +103,9 @@ export type WebhookPayload = {
 	}?,
 	tts: boolean?,
 	allowed_mentions: {
-		parse: {("roles"?) & ("users"?) & ("everyone"?)}?,
-		roles: {number}?,
-		users: {number}?
+		parse: {string?}?,
+		roles: {number?}?,
+		users: {number?}?
 	}?,
 	flags: bitfield?,
 	thread_name: string?,
@@ -490,33 +490,6 @@ function RDHook.new(webhookCredentials: WebhookCredentials): WebhookObject
 	webhookClass.internal[object] = internal
 	
 	return object
-end
-
---[[
-<strong>[YIELDS]</strong>
-
-Gets the image URL of the thumbnail of the given <code>userId</code>, and optional <code>thumbnailType</code>, <code>thumbnailSize</code>, <code>thumbnailFormat</code>, and <code>isCircular</code> properties.
-
-<strong>NOTE:</strong> May return no result if the request fails.
-]]
-function RDHook.GetUserThumbnailAsync(
-	userId: number,
-	thumbnailType: thumbnailType?,
-	thumbnailSize: thumbnailSize?,
-	thumbnailFormat: thumbnailFormat?,
-	isCircular: boolean?
-): (string?)
-	local success: boolean, response: string = pcall(
-		HttpService.GetAsync, HttpService,
-		`https://thumbnails.roproxy.com/v1/users/{thumbnailType or "avatar"}?userIds={userId}&size={thumbnailSize or "48x48"}&format={thumbnailFormat or "Png"}&isCircular={isCircular or false}`
-	)
-	
-	if not success then
-		return nil
-	end
-	
-	local decodedResponse: {data: {{targetId: number, state: string, imageUrl: string, version: string}}} = HttpService:JSONDecode(response)
-	return decodedResponse.data[1].imageUrl
 end
 
 return table.freeze(RDHook)
